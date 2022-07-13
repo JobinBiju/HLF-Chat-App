@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:hlfchat/models/message.dart';
 import 'package:hlfchat/models/user.dart';
 import 'package:image_picker/image_picker.dart';
@@ -118,6 +120,7 @@ class ChatScreen extends StatelessWidget {
                         child: Container(
                           color: Color.fromARGB(255, 224, 225, 231),
                           child: ListView.builder(
+                            controller: chatProvider.scrollController,
                             itemCount: msgs.length,
                             itemBuilder: (context, index) {
                               return MessageBubble(

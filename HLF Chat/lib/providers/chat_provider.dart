@@ -16,6 +16,7 @@ class ChatProvider with ChangeNotifier {
   String apiUrl = 'https://msg-restapi.herokuapp.com';
   late String clientID;
   String imei = '';
+  final ScrollController? scrollController = ScrollController();
 
   final IO.Socket socket = IO.io(
       'ws://msg-socket-server.herokuapp.com',
@@ -43,6 +44,12 @@ class ChatProvider with ChangeNotifier {
       print(jsonData);
       Message message = Message.fromJson(data);
       addMessage(message);
+      scrollController!.animateTo(
+        scrollController!.position.maxScrollExtent,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+      scrollController!.jumpTo(scrollController!.position.maxScrollExtent);
       isLoading = false;
       notifyListeners();
     });
@@ -110,13 +117,22 @@ class ChatProvider with ChangeNotifier {
   }
 
   void addMessage(Message message) {
-    messages.add(message);
+    var flag = 0;
+    messages.forEach((element) {
+      if (element.id == message.id) {
+        flag += 1;
+      }
+    });
+    if (flag == 0) {
+      messages.add(message);
+    }
+
     notifyListeners();
   }
 
   getPastMessages(String userID) async {
     http.Response response =
-        await http.get(Uri.parse(apiUrl + '/messages/all/$userID'));
+        await http.get(Uri.parse('$apiUrl/messages/all/$userID'));
 
     if (response.statusCode == 200) {
       Iterable l = json.decode(response.body);
